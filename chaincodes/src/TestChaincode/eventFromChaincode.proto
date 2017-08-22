@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option java_package = "com.luxoft.skeleton.fabric.proto";
+option go_package = "main";
+option java_outer_classname = "EventFromChaincode";
+
+package upgrade;
+
+enum Type
+{
+    DEFAULT = 0;
+    COMPANY = 1;
+    USER = 2;
+}
+
+message PutEntity
+{
+    string Name = 1;
+    string Description = 2;
+
+    Type type = 3;
+}
+
+message GetEntity
+{
+    string Name = 1;
+}

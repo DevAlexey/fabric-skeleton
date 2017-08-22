@@ -1,0 +1,110 @@
+if (!JavaVersion.current().java8Compatible) {
+    throw new IllegalStateException("This needs Java 8. You are using ${JavaVersion.current()}.")
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'application'
+apply plugin: 'com.google.protobuf'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+sourceCompatibility = 1.8
+
+group   gradle.ext.project_group
+version gradle.ext.project_version
+
+mainClassName = gradle.ext.project_launcher
+
+def localMavenPath = gradle.ext.build_LocalMaven
+
+def protocVersion = gradle.ext.pb_protocVersion
+def protoVersion  = gradle.ext.pb_protoVersion
+def grpcVersion   = gradle.ext.pb_gprcVersion
+
+buildscript {
+    repositories {
+        maven {
+            mavenCentral()
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.0'
+        classpath 'com.google.gradle:osdetector-gradle-plugin:1.4.0'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
+    }
+}
+
+allprojects {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url localMavenPath }
+    }
+}
+
+dependencies {
+    compile group: 'com.luxoft', name: 'fabric-utils', version: '1.2.0-beta'
+
+    compile "io.grpc:grpc-protobuf:${grpcVersion}"
+    compile "com.google.protobuf:protobuf-java:${protoVersion}"
+
+    testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+protobuf {
+    protoc  {
+        artifact = "com.google.protobuf:protoc:${protocVersion}"
+    }
+}
+
+idea {
+    project { languageLevel = JavaVersion.VERSION_1_8 }
+    module {
+        // Not using generatedSourceDirs because of
+        // https://discuss.gradle.org/t/support-for-intellij-2016/15294/8
+        sourceDirs += file("${protobuf.generatedFilesBaseDir}/main/java");
+        sourceDirs += file("${protobuf.generatedFilesBaseDir}/main/grpc");
+    }
+}
+
+sourceSets {
+    main {
+        proto {
+            srcDirs 'src/main/proto'
+            srcDirs 'chaincodes/src'
+        }
+        java {
+            srcDir "src/java"
+        }
+    }
+}
+
+shadowJar {
+    classifier = 'fat'
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.3'
+}
+
+import groovy.io.FileType
+
+task buildGoProto(type: Exec) {
+    def dir = new File("$projectDir/chaincodes/src")
+
+    dir.eachFileRecurse(FileType.DIRECTORIES) { directory ->
+        workingDir directory
+        println(directory)
+
+        commandLine 'sh', '-c', "protoc --go_out=plugins=grpc:. *.proto"
+    }
+}
+
+tasks.build.dependsOn(buildGoProto)
+
+apply from: 'fabric-devnet.gradle'

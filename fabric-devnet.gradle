@@ -1,0 +1,120 @@
+apply from: "fabric-deploy.gradle"
+
+def group_name = 'fabric-devnet'
+
+task netwrokUp(type: Exec) {
+    group = group_name
+
+    workingDir "$projectDir/network/local"
+    commandLine 'sh', '-c', './fabric.sh up'
+
+    doLast { println("FABRIC-UP: Task completed") }
+}
+
+task networkDown(type: Exec) {
+    group = group_name
+    workingDir "$projectDir/network/local"
+    commandLine 'sh', '-c', './fabric.sh down'
+
+    doLast { println("FABRIC-DOWN: Task completed") }
+}
+
+task networkRestart(type: Exec) {
+    group = group_name
+    workingDir "$projectDir/network/local"
+    commandLine 'sh', '-c', './fabric.sh restart'
+
+    doLast { println("FABRIC-RESTART: Task completed") }
+}
+
+task networkClean(type: Exec) {
+    group = group_name
+    workingDir "$projectDir/network/local"
+    commandLine 'sh', '-c', './fabric.sh clean'
+
+    doLast { println("FABRIC-CLEAN: Task completed") }
+}
+
+task networkConfiguration(type: JavaExec) {
+    group = group_name
+
+    workingDir "$projectDir"
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'com.luxoft.fabric.utils.Configurator'
+    args '--type'
+    args 'config'
+    args '--config'
+    args 'network/fabric-devnet.yaml'
+
+    doLast { println("FABRIC-CONFIG: Task completed") }
+}
+
+task contractDeployAll(type: JavaExec) {
+    group = group_name
+
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'com.luxoft.fabric.utils.Configurator'
+    args '--type'
+    args 'deploy'
+    args '--config'
+    args 'network/fabric-devnet.yaml'
+
+    doLast { println("CHAINCODE-DEPLOY: all chaincodes from fabric.yaml") }
+}
+
+task contractDeploy(type: JavaExec) {
+    group = group_name
+
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'com.luxoft.fabric.utils.Configurator'
+
+    def chaicodes = System.getenv("chaincodes")
+    if (chaicodes == null)
+        chaicodes = gradle.ext.chaincodes_toDeploy
+
+    chaicodes = chaicodes.split(" ")
+
+    args '--type'
+    args 'deploy'
+    args '--config'
+    args 'network/fabric-devnet.yaml'
+    args '--name'
+    args chaicodes
+
+    doLast { println("CHAINCODE-DEPLOY:" + chaicodes) }
+}
+
+task contractUpgradeAll(type: JavaExec) {
+    group = group_name
+
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'com.luxoft.fabric.utils.Configurator'
+    args '--type'
+    args 'upgrade'
+    args '--config'
+    args 'network/fabric-devnet.yaml'
+
+    doLast { println("UPGRADE: all chaincodes from config.yaml"); }
+}
+
+task contractUpgrade(type: JavaExec) {
+    group = group_name
+
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'com.luxoft.fabric.utils.Configurator'
+
+    def chaicodes = System.getenv("chaincodes")
+    if (chaicodes == null)
+        chaicodes = gradle.ext.chaincodes_toUpgrade
+
+    chaicodes = chaicodes.split(" ")
+
+    args '--type'
+    args 'upgrade'
+    args '--config'
+    args 'network/fabric-devnet.yaml'
+    args '--name'
+    args chaicodes
+
+    doLast { println("FABRIC-UPGRADE:" + chaicodes) }
+}

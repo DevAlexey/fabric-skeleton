@@ -1,0 +1,2 @@
+gradle.ext.chaincodes_toDeploy  = 'TestChaincode  TestChaincode2'
+gradle.ext.chaincodes_toUpgrade = 'TestChaincode1 TestChaincode2'

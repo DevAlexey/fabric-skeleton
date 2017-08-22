@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option java_package = "com.luxoft.skeleton.fabric.proto";
+option java_outer_classname = "EventFromSources";
+
+package upgrade;
+
+message SystemEvent
+{
+    string Name = 1;
+}
