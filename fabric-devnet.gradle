@@ -35,7 +35,7 @@ task networkClean(type: Exec) {
     doLast { println("FABRIC-CLEAN: Task completed") }
 }
 
-task networkConfiguration(type: JavaExec) {
+task networkConfigure(type: JavaExec) {
     group = group_name
 
     workingDir "$projectDir"
@@ -94,7 +94,7 @@ task contractUpgradeAll(type: JavaExec) {
     args '--config'
     args 'network/fabric-devnet.yaml'
 
-    doLast { println("UPGRADE: all chaincodes from config.yaml"); }
+    doLast { println("UPGRADE: all chaincodes from fabric.yaml"); }
 }
 
 task contractUpgrade(type: JavaExec) {

@@ -56,7 +56,7 @@ chaincodes:
         type: GO_LANG
 
 channels:
-    - test-channel:
+    - paradox-channel:
         admin: org1.luxoft.com
         orderer: orderer.luxoft.com
         peers:
