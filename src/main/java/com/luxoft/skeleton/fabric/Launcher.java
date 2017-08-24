@@ -16,7 +16,7 @@ public class Launcher {
     private static String CONFIG = "network/fabric-devnet.yaml";
 
     public static void main(String[] args) throws Exception {
-        EventFromChaincode.PutEntity putEntity = EventFromChaincode.PutEntity.newBuilder()
+        EventFromChaincode.Entity putEntity = EventFromChaincode.Entity.newBuilder()
                 .setName("Luxoft")
                 .setDescription("Test Sketelon for Fabric")
                 .setType(EventFromChaincode.Type.COMPANY)

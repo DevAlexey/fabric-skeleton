@@ -4,7 +4,7 @@ option java_package = "com.luxoft.skeleton.fabric.proto";
 option go_package = "main";
 option java_outer_classname = "EventFromChaincode";
 
-package upgrade;
+package main;
 
 enum Type
 {
@@ -13,7 +13,7 @@ enum Type
     USER = 2;
 }
 
-message PutEntity
+message Entity
 {
     string Name = 1;
     string Description = 2;

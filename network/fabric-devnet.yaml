@@ -50,9 +50,9 @@ orderers:
 chaincodes:
     - testchaincode:
         id: testchaincode
-        sourceLocation: TestChaincode
-        sourceLocationPrefix: chaincodes
-        version: v01
+        sourceLocation: chaincode
+        sourceLocationPrefix: chaincodes/TestChaincode
+        version: v03
         type: GO_LANG
 
 channels:
