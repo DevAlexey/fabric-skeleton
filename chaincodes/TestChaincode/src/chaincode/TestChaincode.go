@@ -33,18 +33,34 @@ func (t *TestChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 
 	switch function {
 
-	case "invoke":
+	case "PutEntity":
 
 		if len(args) < 1 {
-			return loggedShimError(fmt.Sprintf("Insufficient arguments found\n"))
+			return loggedShimError(fmt.Sprintf("Insufficient arguments number\n"))
 		}
 
-		return t.invoke(stub, args)
+		entity := new(Entity)
+		if err := proto.Unmarshal([]byte(args[0]), entity); err != nil {
+			return loggedShimError(fmt.Sprintf("Invalid argument expected User protocol buffer %s\n", err.Error()))
+		}
 
-	case "query":
+		ref, err := t.putEntityToDB(stub, entity)
+
+		if err != nil {
+			return loggedShimError(fmt.Sprintf("Error getting entity: %s\n", err.Error()))
+		}
+
+		pbmessage, err := proto.Marshal(ref)
+		if err != nil {
+			return loggedShimError(fmt.Sprintf("Failed to marshal Allowed protobuf (%s)", err.Error()))
+		}
+
+		return shim.Success(pbmessage)
+
+	case "GetEntity":
 
 		if len(args) < 1 {
-			return loggedShimError(fmt.Sprintf("Insufficient arguments found\n"))
+			return loggedShimError(fmt.Sprintf("Insufficient arguments number\n"))
 		}
 
 		entityRequest := new(GetEntity)
@@ -68,44 +84,6 @@ func (t *TestChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	}
 
 	return loggedShimError("Invalid invoke function name. Expecting \"invoke\" \"query\"")
-}
-
-
-func (t *TestChaincode) invoke(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-
-	method := args[0]
-
-	logger.Info("Invoke method: " + method)
-
-	switch method {
-
-	case "PutEntity":
-
-		if len(args) < 2 {
-			return loggedShimError(fmt.Sprintf("Insufficient arguments found\n"))
-		}
-
-		entity := new(Entity)
-		if err := proto.Unmarshal([]byte(args[1]), entity); err != nil {
-			return loggedShimError(fmt.Sprintf("Invalid argument expected User protocol buffer %s\n", err.Error()))
-		}
-
-		ref, err := t.putEntityToDB(stub, entity)
-
-		if err != nil {
-			return loggedShimError(fmt.Sprintf("Error getting entity: %s\n", err.Error()))
-		}
-
-		pbmessage, err := proto.Marshal(ref)
-		if err != nil {
-			return loggedShimError(fmt.Sprintf("Failed to marshal Allowed protobuf (%s)", err.Error()))
-		}
-
-		return shim.Success(pbmessage)
-	}
-
-
-	return loggedShimError("Unknown method:" + method)
 }
 
 

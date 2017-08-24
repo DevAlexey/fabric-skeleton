@@ -36,7 +36,7 @@ func test_getEntity(t *testing.T, stub *shim.MockStub, ref GetEntity) Entity {
 		t.Fail()
 	}
 
-	resp := stub.MockInvoke(uuid.New().String(), [][]byte{[]byte("query"), pbmessage})
+	resp := stub.MockInvoke(uuid.New().String(), [][]byte{[]byte("GetEntity"), pbmessage})
 	if resp.Status != 200 {
 		t.Error(resp.Message)
 		t.Fail()
@@ -66,7 +66,7 @@ func test_putEntity(t *testing.T, stub *shim.MockStub, entity Entity) GetEntity 
 		t.Fail()
 	}
 
-	resp := stub.MockInvoke(uuid.New().String(), [][]byte{[]byte("invoke"),[]byte("PutEntity"), pbmessage})
+	resp := stub.MockInvoke(uuid.New().String(), [][]byte{[]byte("PutEntity"), pbmessage})
 	if resp.Status != 200 {
 		t.Error(resp.Message)
 		t.Fail()

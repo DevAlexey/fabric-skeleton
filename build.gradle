@@ -44,7 +44,7 @@ allprojects {
 }
 
 dependencies {
-    compile group: 'com.luxoft', name: 'fabric-utils', version: '1.2.2-beta'
+    compile group: 'com.luxoft', name: 'fabric-utils', version: '1.2.3-beta'
 
     compile "io.grpc:grpc-protobuf:${grpcVersion}"
     compile "com.google.protobuf:protobuf-java:${protoVersion}"

@@ -52,7 +52,7 @@ chaincodes:
         id: testchaincode
         sourceLocation: chaincode
         sourceLocationPrefix: chaincodes/TestChaincode
-        version: v03
+        version: v01
         type: GO_LANG
 
 channels:
