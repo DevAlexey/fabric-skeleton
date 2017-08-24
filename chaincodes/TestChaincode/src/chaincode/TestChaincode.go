@@ -25,13 +25,19 @@ func (t *TestChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 
 
 func (t *TestChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
-	logger.Info("Invoke")
+
 
 	function, args := stub.GetFunctionAndParameters()
+
+	logger.Info("Invoke: " + function)
 
 	switch function {
 
 	case "invoke":
+
+		if len(args) < 1 {
+			return loggedShimError(fmt.Sprintf("Insufficient arguments found\n"))
+		}
 
 		return t.invoke(stub, args)
 
@@ -61,24 +67,56 @@ func (t *TestChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 
 	}
 
-	return loggedShimError("Invalid invoke function name. Expecting \"invoke\" \"delete\" \"query\"")
+	return loggedShimError("Invalid invoke function name. Expecting \"invoke\" \"query\"")
 }
 
 
 func (t *TestChaincode) invoke(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 
-	return shim.Success(nil)
+	method := args[0]
+
+	logger.Info("Invoke method: " + method)
+
+	switch method {
+
+	case "PutEntity":
+
+		if len(args) < 2 {
+			return loggedShimError(fmt.Sprintf("Insufficient arguments found\n"))
+		}
+
+		entity := new(Entity)
+		if err := proto.Unmarshal([]byte(args[1]), entity); err != nil {
+			return loggedShimError(fmt.Sprintf("Invalid argument expected User protocol buffer %s\n", err.Error()))
+		}
+
+		ref, err := t.putEntityToDB(stub, entity)
+
+		if err != nil {
+			return loggedShimError(fmt.Sprintf("Error getting entity: %s\n", err.Error()))
+		}
+
+		pbmessage, err := proto.Marshal(ref)
+		if err != nil {
+			return loggedShimError(fmt.Sprintf("Failed to marshal Allowed protobuf (%s)", err.Error()))
+		}
+
+		return shim.Success(pbmessage)
+	}
+
+
+	return loggedShimError("Unknown method:" + method)
 }
 
 
 // query callback representing the query of a chaincode
 func (t *TestChaincode) query(stub shim.ChaincodeStubInterface, ref *GetEntity) (*Entity, error) {
 
-	if err := checkPermissions(stub); err != nil {
+	if err := t.checkPermissions(stub); err != nil {
 		return nil, err
 	}
 
-	entity, err := getEntityFromDB(*ref, stub)
+	entity, err := t.getEntityFromDB(stub, ref)
 
 	if err != nil {
 		return nil, fmt.Errorf("Error getting file from db: " + err.Error())
@@ -88,7 +126,7 @@ func (t *TestChaincode) query(stub shim.ChaincodeStubInterface, ref *GetEntity) 
 }
 
 // this method is required only when using CouchDB as peer database cause it stores data as JSON
-func getEntityFromDB(entityName GetEntity, stub shim.ChaincodeStubInterface) (*Entity, error) {
+func (t *TestChaincode) getEntityFromDB(stub shim.ChaincodeStubInterface, entityName *GetEntity) (*Entity, error) {
 
 	entity := new(Entity)
 
@@ -110,23 +148,23 @@ func getEntityFromDB(entityName GetEntity, stub shim.ChaincodeStubInterface) (*E
 }
 
 // this method is required only when using CouchDB as peer database cause it stores data as JSON
-func putEntityToDB( entity Entity, stub shim.ChaincodeStubInterface) (string, error) {
+func (t *TestChaincode) putEntityToDB(stub shim.ChaincodeStubInterface, entity *Entity) (*GetEntity, error) {
 
 	key := entity.Name
 
 	entityJSONasBytes, err := json.Marshal(entity)
 	if err != nil {
-		return "", fmt.Errorf("Failed to create json for entity <%s> with error: %s" , key, err)
+		return nil, fmt.Errorf("Failed to create json for entity <%s> with error: %s" , key, err)
 	}
 
 	if err := stub.PutState(key, entityJSONasBytes); err != nil {
-		return "", fmt.Errorf("Failed to store entity <%s> with error: %s" , key, err)
+		return nil, fmt.Errorf("Failed to store entity <%s> with error: %s" , key, err)
 	}
-	return key, nil
+	return &GetEntity{Name:key}, nil
 }
 
 // Sample code to call separate Auth chaincode for permissions check
-func checkPermissions(stub shim.ChaincodeStubInterface) error {
+func (t *TestChaincode) checkPermissions(stub shim.ChaincodeStubInterface) error {
 	//args := [][]byte{[]byte(permissions)}
 	//
 	//if subject != nil {
