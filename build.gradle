@@ -44,7 +44,7 @@ allprojects {
 }
 
 dependencies {
-    compile group: 'com.luxoft', name: 'fabric-utils', version: '1.2.0-beta'
+    compile group: 'com.luxoft', name: 'fabric-utils', version: '1.2.2-beta'
 
     compile "io.grpc:grpc-protobuf:${grpcVersion}"
     compile "com.google.protobuf:protobuf-java:${protoVersion}"
@@ -95,11 +95,15 @@ task wrapper(type: Wrapper) {
 import groovy.io.FileType
 
 task buildGoProto(type: Exec) {
-    def dir = new File("$projectDir/chaincodes/src")
+    def dir = new File("$projectDir/chaincodes")
 
-    dir.eachFileRecurse(FileType.DIRECTORIES) { directory ->
-        workingDir directory
-        println(directory)
+    dir.eachFile(FileType.DIRECTORIES) { directory ->
+
+        def srcDir = new File(directory, "src/chaincode")
+
+        workingDir srcDir
+//        println(srcDir)
+
 
         commandLine 'sh', '-c', "protoc --go_out=plugins=grpc:. *.proto"
     }
