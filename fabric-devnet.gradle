@@ -2,7 +2,7 @@ apply from: "fabric-deploy.gradle"
 
 def group_name = 'fabric-devnet'
 
-task netwrokUp(type: Exec) {
+task networkUp(type: Exec) {
     group = group_name
 
     workingDir "$projectDir/network/local"
