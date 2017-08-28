@@ -83,6 +83,11 @@ sourceSets {
             srcDir "src/java"
         }
     }
+    test {
+        java {
+            srcDir "src/test"
+        }
+    }
 }
 
 shadowJar {
