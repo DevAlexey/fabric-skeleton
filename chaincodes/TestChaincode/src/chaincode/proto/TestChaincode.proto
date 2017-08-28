@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option java_package = "com.luxoft.skeleton.fabric.proto";
 option go_package = "main";
-option java_outer_classname = "EventFromChaincode";
+option java_outer_classname = "TestChaincode";
 
 package main;
 
@@ -24,4 +24,16 @@ message Entity
 message GetEntity
 {
     string Name = 1;
+}
+
+message HistoryItem {
+    string TxId = 1;
+    Entity value = 2;
+    int64  timestamp = 3;
+    bool   isDelete = 4;
+}
+
+message History {
+    repeated HistoryItem history = 1;
+    string key = 2;
 }

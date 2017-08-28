@@ -77,7 +77,7 @@ sourceSets {
     main {
         proto {
             srcDirs 'src/main/proto'
-            srcDirs 'chaincodes/src'
+            srcDirs 'chaincodes/TestChaincode/src/chaincode/proto'
         }
         java {
             srcDir "src/java"
@@ -103,13 +103,13 @@ task buildGoProto(type: Exec) {
 
     dir.eachFile(FileType.DIRECTORIES) { directory ->
 
-        def srcDir = new File(directory, "src/chaincode")
+        def srcDir = new File(directory, "src/chaincode/proto")
 
         workingDir srcDir
-//        println(srcDir)
+        println(srcDir)
 
 
-        commandLine 'sh', '-c', "protoc --go_out=plugins=grpc:. *.proto"
+        commandLine 'sh', '-c', "protoc --go_out=plugins=grpc:../ *.proto"
     }
 }
 
