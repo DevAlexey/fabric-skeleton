@@ -103,18 +103,20 @@ task wrapper(type: Wrapper) {
 
 import groovy.io.FileType
 
-task buildGoProto(type: Exec) {
+task buildGoProto {
     def dir = new File("$projectDir/chaincodes")
 
     dir.eachFile(FileType.DIRECTORIES) { directory ->
+        doLast {
+            exec {
+                def srcDir = new File(directory, "src/chaincode/proto")
 
-        def srcDir = new File(directory, "src/chaincode/proto")
+                workingDir srcDir
+                println(srcDir)
 
-        workingDir srcDir
-        println(srcDir)
-
-
-        commandLine 'sh', '-c', "protoc --go_out=plugins=grpc:../ *.proto"
+                commandLine 'sh', '-c', "protoc --go_out=plugins=grpc:../ *.proto"
+            }
+        }
     }
 }
 
