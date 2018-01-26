@@ -1,0 +1,25 @@
+galaxy_info:
+  author: Alexey Koren
+  description: Fabric 1.0.1 Configurator
+  company: Luxoft
+  license: Apache
+  min_ansible_version: 2.1
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+  galaxy_tags: []
+
+dependencies:
+
+#    - name: ubuntu-ansible-req
+#      src: git+https://luxproject.luxoft.com/stash/scm/blockchain/ansible-playbooks.git
+#      version: origin/ubuntu-ansible-req
+#
+#    - name: ubuntu-add-luxoft-ca
+#      src: git+https://luxproject.luxoft.com/stash/scm/blockchain/ansible-playbooks.git
+#      version: origin/ubuntu-add-luxoft-ca
+#
+#    - name: ubuntu-docker-engine
+#      src: git+https://luxproject.luxoft.com/stash/scm/blockchain/ansible-playbooks.git
+#      version: origin/ubuntu-docker-engine

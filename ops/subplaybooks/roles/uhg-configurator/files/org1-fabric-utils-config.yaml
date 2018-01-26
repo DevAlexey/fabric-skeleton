@@ -1,0 +1,90 @@
+#
+# Copyright Luxoft. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+admins:
+    - organisation1.luxoft.com:
+        name: admin
+        cert: network/crypto-config/peerOrganizations/organisation1.luxoft.com/users/Admin@organisation1.luxoft.com/msp/admincerts/Admin@organisation1.luxoft.com-cert.pem
+        privateKey: network/crypto-config/peerOrganizations/organisation1.luxoft.com/users/Admin@organisation1.luxoft.com/msp/keystore/*
+        mspID: Org1MSP
+
+eventhubs:
+    - peer0.organisation1.luxoft.com:
+        url: grpcs://peer0.organisation1.luxoft.com:7053
+        pemFile: network/crypto-config/peerOrganizations/organisation1.luxoft.com/peers/peer0.organisation1.luxoft.com/tls/ca.crt
+        sslProvider: openSSL
+        negotiationType: TLS
+        hostnameOverride: peer0.organisation1.luxoft.com
+
+peers:
+    - peer0.organisation1.luxoft.com:
+        url: grpcs://peer0.organisation1.luxoft.com:7051
+        pemFile: network/crypto-config/peerOrganizations/organisation1.luxoft.com/peers/peer0.organisation1.luxoft.com/tls/ca.crt
+        sslProvider: openSSL
+        negotiationType: TLS
+        hostnameOverride: peer0.organisation1.luxoft.com
+
+orderers:
+    - orderer0.luxoft.com:
+        url: grpcs://orderer0.luxoft.com:7050
+        pemFile: network/crypto-config/ordererOrganizations/luxoft.com/orderers/orderer0.luxoft.com/tls/ca.crt
+        sslProvider: openSSL
+        negotiationType: TLS
+        hostnameOverride: orderer0.luxoft.com
+        waitTime: 10000
+
+chaincodes:
+    - accumulator:
+        id: accumulator
+        sourceLocation: chaincode
+        sourceLocationPrefix: chaincodes/Accumulator
+        version: v12
+        type: GO_LANG
+    - insuredregistry:
+        id: insuredregistry
+        sourceLocation: chaincode
+        sourceLocationPrefix: chaincodes/InsuredRegistry
+        version: v12
+        type: GO_LANG
+        initArguments:
+            - '{  "cert": "-----BEGIN CERTIFICATE-----\nMIICCDCCAa6gAwIBAgIRAONrd/fubmnPTMIz2fS3J3kwCgYIKoZIzj0EAwIwZzEL\nMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG\ncmFuY2lzY28xEzARBgNVBAoTCmx1eG9mdC5jb20xFjAUBgNVBAMTDWNhLmx1eG9m\ndC5jb20wHhcNMTcwNzE5MTEyOTA5WhcNMjcwNzE3MTEyOTA5WjBVMQswCQYDVQQG\nEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZyYW5jaXNj\nbzEZMBcGA1UEAwwQQWRtaW5AbHV4b2Z0LmNvbTBZMBMGByqGSM49AgEGCCqGSM49\nAwEHA0IABKvaRE/ASIxifpzfRhg5XPumFTO9Apax76JnSd5Kl52GSobO4zgzu4aJ\ncg4bAv2dPfn+pOjSofwUteTy9WUF1bujTTBLMA4GA1UdDwEB/wQEAwIHgDAMBgNV\nHRMBAf8EAjAAMCsGA1UdIwQkMCKAIC7X00ijHDlQbM/NwPEk9oA85bn1bsgYH5ui\nhe3J+9R/MAoGCCqGSM49BAMCA0gAMEUCIQDxXjWxzV9NX0fhVrFdi7Nxsz0eWpqF\nb6e55JsQKOu+JQIgDgTRTCbJ8twCl0ANTjDxr0B/E0MQoMLrX83cU+5nQkI=\n-----END CERTIFICATE-----\n" }'
+
+channels:
+
+      - insuredregistry:
+          admin: organisation1.luxoft.com
+          orderers:
+              - orderer0.luxoft.com
+          peers:
+              - peer0.organisation1.luxoft.com
+          eventhubs:
+              - peer0.organisation1.luxoft.com
+          txFile: network/chain-config/insuredregistry.tx
+          chaincodes:
+              - insuredregistry
+
+      - jointchannel:
+          admin: organisation1.luxoft.com
+          orderers:
+              - orderer0.luxoft.com
+          peers:
+              - peer0.organisation1.luxoft.com
+          eventhubs:
+              - peer0.organisation1.luxoft.com
+          txFile: network/channel-artifacts/jointchannel.tx
+          chaincodes:
+              - accumulator
+
+      - org1channel:
+          admin: organisation1.luxoft.com
+          orderers:
+              - orderer0.luxoft.com
+          peers:
+              - peer0.organisation1.luxoft.com
+          eventhubs:
+              - peer0.organisation1.luxoft.com
+          txFile: network/channel-artifacts/org1channel.tx
+          chaincodes:
+              - accumulator

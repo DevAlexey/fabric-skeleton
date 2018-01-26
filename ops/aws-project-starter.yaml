@@ -1,0 +1,34 @@
+---
+# installs cluster on aws with whole project
+# for project-specific part of deployment you should fill "business" playbooks
+# NOTE: leaves cluster working! Use test playbooks to make run-test-kill (to save money)
+
+# starts vms on aws for blockchain infrastructure
+- import_playbook: subplaybooks/aws-fabric-cluster-starter.yaml
+
+# reads aws inventory and creates ansible host groups of blockchain infrastructure for next steps
+- import_playbook: subplaybooks/aws-fabric-hosts-loader.yaml
+# reads aws inventory and creates ansible host groups of business nodes for next steps
+- import_playbook: subplaybooks/aws-business-hosts-loader.yaml
+
+## generates crypto and channel artifacts for fabric network when needed
+- import_playbook: subplaybooks/fabric-artifacts-generator.yaml
+  when: network_dir is not defined
+
+### deploys fabric blockchain infrastructure on prepared vms
+- import_playbook: subplaybooks/fabric-network.yaml
+
+## deploys fabric monitoring subsystem
+- import_playbook: subplaybooks/fabric-monitoring.yaml
+  when: monitoring_enabled
+
+## deploys logging subsystem
+- import_playbook: subplaybooks/fabric-elk.yaml
+  when: elk_enabled
+
+#####################
+# business block
+#####################
+
+# installs and runs business nodes
+- import_playbook: subplaybooks/business-layer.yaml

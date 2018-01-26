@@ -1,0 +1,57 @@
+---
+
+- name: Ensure required packages are installed (apt)
+  become: yes
+  apt:
+    name: default-jdk
+    update_cache: yes
+    state: present
+
+- name: debug network dir
+  become: yes
+  debug:
+    msg: "{{network_dir}}"
+
+- name: Set hosts file
+  become: yes
+  template: src=hosts.j2 dest=/etc/hosts mode=0644
+
+- name: copy network
+  synchronize:
+    src: "{{network_dir}}/"
+    dest: "{{ ansible_env.HOME}}/network"
+    delete: yes
+
+- name: copy loader jar
+  synchronize:
+    src: "../files/" # todo get jars separately from build/ to always get actual one
+    dest: "{{ ansible_env.HOME}}"
+#
+- name: copy channel-artifacts
+  synchronize:
+    src: "../files/chain-config"
+    dest: "{{ ansible_env.HOME}}/network"
+
+- name: copy channel-artifacts
+  synchronize:
+    src: "../../../../chaincodes"
+    dest: "{{ ansible_env.HOME}}"
+#
+#- name: Set yamls for rest client - batch optum
+#  become: yes
+#  template: "src=test-batch-pbm.yaml.j2 dest={{ ansible_env.HOME}}/data/test-batch-pbm.yaml mode=0644"
+#
+#- name: Set yamls for rest client - batch tpa
+#  become: yes
+#  template: "src=test-batch-tpa.yaml.j2 dest={{ ansible_env.HOME}}/data/test-batch-tpa.yaml mode=0644"
+#
+#- name: Set yamls for rest client - online
+#  become: yes
+#  template: "src=test-online.yaml.j2 dest={{ ansible_env.HOME}}/data/test-online.yaml mode=0644"
+#
+#- name: run loader
+##  workdir: "{{ ansible_env.HOME}}"
+#  raw: "./loadUsersAndPlans.sh"
+#  register: out
+#
+#- debug: var=out.stdout_lines

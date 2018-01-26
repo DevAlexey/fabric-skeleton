@@ -1,0 +1,14 @@
+batch:
+  class: batch
+  sourceSystem: PBM
+  serverAddress: http://{{ hostvars[groups['peers'][1]]['ansible_host'] }}:8075
+  sourceFile: data/rest-data-pbm.xlsx
+# numThreads: 4
+
+online0:
+  class: online
+  sourceSystem: PBM
+  serverAddress: http://{{ hostvars[groups['peers'][1]]['ansible_host'] }}:8075
+  sourceFile: data/rest-data-pbm.xlsx
+  collisionPercent: 0
+  sleepTime: 1000

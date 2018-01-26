@@ -1,0 +1,30 @@
+---
+# FILL THIS PROJECT SPECIFIC PLAYBOOK TO CREATE GOOD ANSIBLE
+# GROUPS FROM AWS TAGGED BUSINESS INSTANCES
+
+- name: Set host groups from AWS inventory
+  hosts: localhost
+  gather_facts: False
+  tasks:
+    - name: Add configurator as hosts group
+      add_host:
+        hostname: "configurator"
+        ansible_host: "{{ item.1 }}"
+        groupname: configurator
+        ansible_ssh_private_key_file: "{{pem_path}}"
+        ansible_ssh_user: "{{user_name}}"
+      with_indexed_items: "{{ groups['tag_project_group_configurator']|list }}"
+    - name: Add business nodes as hosts group
+      add_host:
+        hostname: "business_node{{item.0}}"
+        ansible_host: "{{ item.1 }}"
+        groupname: business_nodes
+        ansible_ssh_private_key_file: "{{pem_path}}"
+        ansible_ssh_user: "{{user_name}}"
+      with_indexed_items: "{{ groups['tag_project_group_business_nodes']|list }}"
+
+- name: Log groups to check they were created fine
+  hosts: localhost
+  tasks:
+    - debug:
+        msg: "{{ groups }}"
