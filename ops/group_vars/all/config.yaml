@@ -15,11 +15,11 @@ monitoring_enabled: False # to start blockchain monitoring stack
 elk_enabled: False # to start external logging stack on ELK
 
 # fabric network configs
-orderers_count: 2
+orderers_count: 1
 peers_count_per_org: 2  # NOTE: peers_count_per_org for 1 organisation, total peers count is calculated as peers_count*organisations_count
-organisations_count: 3
+organisations_count: 1
 zookeeper_count: 3 # 3/5/7 - used when orderers_count > 1
 kafka_count: 4 # > 3 - used when orderers_count > 1
-business_nodes_count: 3
+business_nodes_count: 1
 
 # NOTE: feel free to add your project-specific variables
