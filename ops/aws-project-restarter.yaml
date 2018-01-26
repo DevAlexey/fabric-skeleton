@@ -4,7 +4,6 @@
 # NOTE: leaves cluster working! Use test playbooks to make run-test-kill (to save money)
 
 - import_playbook: subplaybooks/aws-fabric-hosts-loader.yaml
-- import_playbook: subplaybooks/aws-business-hosts-loader.yaml
 - import_playbook: subplaybooks/fabric-network-cleanup.yaml
 - import_playbook: subplaybooks/fabric-network-restart.yaml
 
@@ -12,8 +11,5 @@
 # business block - project specific layer
 #####################
 
-# calls configurator to set up channels, chaincodes and another project-specific stuff
-#- import_playbook: subplaybooks/business-blockchain-configuration.yaml
-
-# installs and runs business nodes
-#- import_playbook: subplaybooks/business-nodes.yaml
+# place here restarters of business nodes
+- import_playbook: subplaybooks/business-layer-restarter.yaml
