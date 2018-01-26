@@ -8,8 +8,6 @@
 
 # reads aws inventory and creates ansible host groups of blockchain infrastructure for next steps
 - import_playbook: subplaybooks/aws-fabric-hosts-loader.yaml
-# reads aws inventory and creates ansible host groups of business nodes for next steps
-- import_playbook: subplaybooks/aws-business-hosts-loader.yaml
 
 ## generates crypto and channel artifacts for fabric network when needed
 - import_playbook: subplaybooks/fabric-artifacts-generator.yaml

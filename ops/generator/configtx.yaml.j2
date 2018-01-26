@@ -40,14 +40,6 @@ Profiles:
                 - *Org{{org_number}}
 {% endfor %}
 
-    insuredregistry:
-        Consortium: SampleConsortium
-        Application:
-            <<: *ApplicationDefaults
-            Organizations:
-                - *Org0
-                - *Org1
-
 Organizations:
     - &OrdererOrg
         Name: OrdererOrg

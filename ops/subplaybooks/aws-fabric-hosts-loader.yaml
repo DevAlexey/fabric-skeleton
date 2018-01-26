@@ -109,6 +109,15 @@
         ansible_ssh_user: "{{user_name}}"
       with_indexed_items: "{{ groups['tag_project_group_elk']|list }}"
 
+    - name: Add business nodes as hosts group
+      add_host:
+        hostname: "business_node{{item.0}}"
+        ansible_host: "{{ item.1 }}"
+        groupname: business_nodes
+        ansible_ssh_private_key_file: "{{pem_path}}"
+        ansible_ssh_user: "{{user_name}}"
+      with_indexed_items: "{{ groups['tag_project_group_business_nodes']|list }}"
+
 - name: Log groups to check they were created fine
   hosts: localhost
   tasks:

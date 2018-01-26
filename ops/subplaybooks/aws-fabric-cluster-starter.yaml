@@ -164,6 +164,24 @@
          vpc_subnet_id: "{{subnet_id}}"
          assign_public_ip: yes
       register: ec2elk
+
+      - name: Create business nodes vms
+        ec2:
+           key_name: "{{ keypair }}"
+           group: Blockchain-Fabric
+           instance_type: "{{ instance_type}}"
+           image: "{{ ami }}"
+           wait: true
+           region: "{{ region }}"
+           count: "{{business_nodes_count}}"
+           instance_tags:
+              Name: "{{project_name}}_business_node"
+              cluster_id: "{{ cluster_id }}"
+              project_group: business_nodes
+              project: "{{project_name}}"
+           vpc_subnet_id: "{{subnet_id}}"
+           assign_public_ip: yes
+        register: ec2businessnodes
 #
     - name: Wait for SSH to come up
       when: "not skip_starter"
@@ -173,7 +191,7 @@
         delay: 15
         timeout: 100
         state: started
-      with_items: "{{ ec2peers['results']|map(attribute='instances')|list + ec2cas['results']|map(attribute='instances')|list + ec2orderers.instances }}"
+      with_items: "{{ ec2peers['results']|map(attribute='instances')|list + ec2cas['results']|map(attribute='instances')|list + ec2orderers.instances + ec2businessnodes.instances}}"
 
     - name: Wait for SSH to come up multiorderers case
       when: "not skip_starter and orderers_count > 1"
