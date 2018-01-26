@@ -46,3 +46,4 @@ venv
 dist
 network_dist
 *.retry
+group_vars/all/config.yaml

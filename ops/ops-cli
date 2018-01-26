@@ -11,6 +11,7 @@ do
 key="$1"
 KILL_FLAG=false
 RESTART_FLAG=false
+TEST_FLAG=false
 REMOTE_USER=ubuntu
 
 case $key in
@@ -31,6 +32,11 @@ case $key in
     ;;
     -r|--restart)
     RESTART_FLAG=true
+    shift # past argument
+    shift # past value
+    ;;
+    -t|--test)
+    TEST_FLAG=true
     shift # past argument
     shift # past value
     ;;
@@ -91,6 +97,14 @@ then
 fi
 
 cp cluster_configs/${CLUSTER_ID}.yaml group_vars/all/config.yaml
+
+if [ "$TEST_FLAG" = true ]
+then
+    ansible-playbook aws-project-tester.yaml -i ec2.py -u ${REMOTE_USER} --private-key ${KEY_FILE} --extra-vars "cluster_id=${CLUSTER_ID}"
+    exit
+else
+    echo "Test flag not set"
+fi
 
 if [ "$RESTART_FLAG" = true ]
 then

@@ -86,7 +86,7 @@
          assign_public_ip: yes
       with_nested:
         - "{{ range(organisations_count)|list }}"
-        - "{{ range(peers_count)|list }}"
+        - "{{ range(peers_count_per_org)|list }}"
       register: ec2peers
 
     - name: Create zookeeper nodes
@@ -165,23 +165,23 @@
          assign_public_ip: yes
       register: ec2elk
 
-      - name: Create business nodes vms
-        ec2:
-           key_name: "{{ keypair }}"
-           group: Blockchain-Fabric
-           instance_type: "{{ instance_type}}"
-           image: "{{ ami }}"
-           wait: true
-           region: "{{ region }}"
-           count: "{{business_nodes_count}}"
-           instance_tags:
-              Name: "{{project_name}}_business_node"
-              cluster_id: "{{ cluster_id }}"
-              project_group: business_nodes
-              project: "{{project_name}}"
-           vpc_subnet_id: "{{subnet_id}}"
-           assign_public_ip: yes
-        register: ec2businessnodes
+    - name: Create business nodes vms
+      ec2:
+         key_name: "{{ keypair }}"
+         group: Blockchain-Fabric
+         instance_type: "{{ instance_type}}"
+         image: "{{ ami }}"
+         wait: true
+         region: "{{ region }}"
+         count: "{{business_nodes_count}}"
+         instance_tags:
+            Name: "{{project_name}}_business_node"
+            cluster_id: "{{ cluster_id }}"
+            project_group: business_nodes
+            project: "{{project_name}}"
+         vpc_subnet_id: "{{subnet_id}}"
+         assign_public_ip: yes
+      register: ec2businessnodes
 #
     - name: Wait for SSH to come up
       when: "not skip_starter"

@@ -16,9 +16,8 @@ elk_enabled: False # to start external logging stack on ELK
 
 # fabric network configs
 orderers_count: 2
-#peers_count_per_org: 2  # NOTE: peers_count_per_org for 1 organisation, total peers count is calculated as peers_count*organisations_count
-peers_count: 2  # NOTE: peers_count_per_org for 1 organisation, total peers count is calculated as peers_count*organisations_count
-organisations_count: 2
+peers_count_per_org: 2  # NOTE: peers_count_per_org for 1 organisation, total peers count is calculated as peers_count*organisations_count
+organisations_count: 3
 zookeeper_count: 3 # 3/5/7 - used when orderers_count > 1
 kafka_count: 4 # > 3 - used when orderers_count > 1
 business_nodes_count: 3
