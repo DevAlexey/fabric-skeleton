@@ -2,16 +2,6 @@
 
 Basic boilerplate of devops for Hyberledger Fabric based projects.
 
-#### Why and What
-
-If you have Hyberledger Fabric based project, question of devops probably will be the one of biggest technical
- challenges - you will need to have easy and stable ways to deploy/restart/kill your network, especially in cloud environment (like AWS). 
- We developed several independent Fabric based projects, this repository is our try to use some of our experience to 
- speed up development process in future projects from DevOps side.
- 
-This repo contains useful files to handle Fabric network with Ansible. 
-It also contains boilerplate for command line interface.  
- 
 #### How to use it  
 
 To start devops automation of your Hyberledger Fabric project, follow next steps:
