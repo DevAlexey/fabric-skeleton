@@ -13,6 +13,7 @@ KILL_FLAG=false
 RESTART_FLAG=false
 TEST_FLAG=false
 REMOTE_USER=ubuntu
+INVENTORY_FILE="hosts"
 
 case $key in
     -c|--cluster_id)
@@ -37,6 +38,11 @@ case $key in
     ;;
     -t|--test)
     TEST_FLAG=true
+    shift # past argument
+    shift # past value
+    ;;
+    -h|--hosts)
+    HOSTS_PATH="$2"
     shift # past argument
     shift # past value
     ;;
@@ -66,6 +72,16 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 # echo NETWORK_DIR_PATH = "${NETWORK_DIR_PATH}"
 # echo KILL_FLAG = "${KILL_FLAG}"
 # echo DEFAULT = "${DEFAULT}"
+
+if [ -z ${HOSTS_PATH+x} ]; then
+    echo ${bold}AWS mode${normal}
+    INVENTORY_FILE="ec2.py"
+    AWS_ENABLED="True"
+else
+    echo ${bold}Static inventory mode${normal} with ${HOSTS_PATH}
+    INVENTORY_FILE="${HOSTS_PATH}"
+    AWS_ENABLED="False"
+fi
 
 if [ -z ${CLUSTER_ID+x} ]; then
     echo ${bold}Cluster id is not set${normal}
@@ -100,7 +116,7 @@ cp cluster_configs/${CLUSTER_ID}.yaml group_vars/all/config.yaml
 
 if [ "$TEST_FLAG" = true ]
 then
-    ansible-playbook aws-project-tester.yaml -i ec2.py -u ${REMOTE_USER} --private-key ${KEY_FILE} --extra-vars "cluster_id=${CLUSTER_ID}"
+    ansible-playbook aws-project-tester.yaml -i ${INVENTORY_FILE} -u ${REMOTE_USER} --private-key ${KEY_FILE} --extra-vars "cluster_id=${CLUSTER_ID} aws_enabled=${AWS_ENABLED}"
     exit
 else
     echo "Test flag not set"
@@ -108,7 +124,7 @@ fi
 
 if [ "$RESTART_FLAG" = true ]
 then
-    ansible-playbook aws-project-restarter.yaml -i ec2.py -u ${REMOTE_USER} --private-key ${KEY_FILE} --extra-vars "cluster_id=${CLUSTER_ID}"
+    ansible-playbook aws-project-restarter.yaml -i ${INVENTORY_FILE} -u ${REMOTE_USER} --private-key ${KEY_FILE} --extra-vars "cluster_id=${CLUSTER_ID} aws_enabled=${AWS_ENABLED}"
     exit
 else
     echo "Restart flag not set"
@@ -117,18 +133,18 @@ fi
 if [ "$KILL_FLAG" = true ]
 then
     echo ${bold}Kill${normal} mode is activated, starting ansible cluster-killer...
-    ansible-playbook subplaybooks/aws-cluster-killer.yaml -i ec2.py --extra-vars "cluster_id=${CLUSTER_ID}"
+    ansible-playbook subplaybooks/aws-cluster-killer.yaml -i ${INVENTORY_FILE} --extra-vars "cluster_id=${CLUSTER_ID} aws_enabled=${AWS_ENABLED}"
 else
     echo ${bold}Deploy${normal} mode is activated, starting ansible cluster-deploy...
     if [ -z "$NETWORK_DIR_PATH" ]
     then
         echo ${bold}Network folder was not set and will be created automatically: network_dist${normal}
-        ansible-playbook aws-project-starter.yaml -i ec2.py -u ${REMOTE_USER} --private-key ${KEY_FILE} --extra-vars "cluster_id=${CLUSTER_ID}"
+        ansible-playbook aws-project-starter.yaml -i ${INVENTORY_FILE} -u ${REMOTE_USER} --private-key ${KEY_FILE} --extra-vars "cluster_id=${CLUSTER_ID} aws_enabled=${AWS_ENABLED}"
     else
         if [ -e ${NETWORK_DIR_PATH} ]
         then
             echo ${bold}Network folder set and exists: ${NETWORK_DIR_PATH}${normal}
-            ansible-playbook aws-project-starter.yaml -i ec2.py -u ${REMOTE_USER} --private-key ${KEY_FILE} --extra-vars "cluster_id=${CLUSTER_ID} network_dir=${NETWORK_DIR_PATH}"
+            ansible-playbook aws-project-starter.yaml -i ${INVENTORY_FILE} -u ${REMOTE_USER} --private-key ${KEY_FILE} --extra-vars "cluster_id=${CLUSTER_ID} network_dir=${NETWORK_DIR_PATH} aws_enabled=${AWS_ENABLED}"
         else
             printf "${RED}ERROR: Network folder was set but not found: ${NETWORK_DIR_PATH}, exiting...${NC}\n"
             exit

@@ -37,10 +37,13 @@ ops-cli is simple bash script to run whole ansible
 There are some flags you can set:
 - *-c <cluster_id>* - cluster id, used to differ clusters between each other. If not set - will be asked on start.
 - *-k* - (optional) to kill cluster 
-- *-r* - (optional) to restart cluster 
+- *-r* - (optional) to restart cluster
 - *-i* - path to pem file for vms access 
 - *-t* - (optional) to run cluster in test mode (run-test-kill) 
 - *-u <user_name>* - (optional) remote user name ('ubuntu' by default) 
+- *-h <hosts_path>* - (optional) hosts file path - for **static inventory support** 
+(if you want to manage your vms by yourself), see hosts.source for more information. *Note: in that case,
+ matching between cluster config (counts) and real machines count is your responsibility*   
 - *-n <network_dir>* - (optional) to set path to hyberledger fabric artifacts (crypto etc) - *not recommended* (avoid strong connection of application with specific artifacts). 
     By default, new artifacts will be generated automatically - it's more recommended way.
 
@@ -55,6 +58,9 @@ Examples:
 
 # restart cluster with id cluster1
 ./ops-cli -c cluster1 -i ~/apitester.pem -r
+
+# start cluster with id cluster1 and static inventory file hosts
+./ops-cli -c cluster1 -i ~/apitester.pem -h hosts
 ```
 
 
